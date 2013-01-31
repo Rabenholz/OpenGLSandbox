@@ -1,5 +1,8 @@
 #pragma once
-#include <SFML/Graphics.hpp>
+
+#include <GL/glew.h>
+#include <SFML/Window.hpp>
+#include <SFML/OpenGL.hpp>
 #include <vector>
 #include <map>
 #include <memory>
@@ -8,7 +11,6 @@
 #include "SFML-Template/GameStateBase.h"
 #include "SFML-Template/SoundManager.h"
 #include "SFML-Template/TextureManager.h"
-#include "SFML-Template/SpriteManager.h"
 #include "SFML-Template/FontManager.h"
 
 #include "GameState_MainMenu.h"
@@ -44,8 +46,17 @@ public:
 
 private:
 	bool m_running;
-	sf::RenderWindow m_mainWindow;
+	sf::Window m_mainWindow;
 	std::vector<GameStateBase*> m_states;
 	std::map<std::string, GameStateBase::ptr> m_registeredGameStates;
+
+	static GLfloat cubeVertexArray[360];
+	static GLushort cubeElementArray[36];
+	GLuint m_vertexBuffer;
+	GLuint m_elementBuffer;
+	GLuint m_vertexShader1, m_fragmentShader1, m_program1;
+	GLint m_position1, m_color1;
+	GLfloat m_timerVal;
+	GLint m_timer;
 };
 

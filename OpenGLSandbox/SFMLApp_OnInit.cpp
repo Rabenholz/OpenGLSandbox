@@ -12,8 +12,14 @@ bool SFMLApp::OnInit(void)
 	{
 		printf("Glew init failed\n");
 	}
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
+	glDepthMask(GL_TRUE);
 	glClearDepth(1.f);
 	glClearColor(0.f, 0.f, 0.f, 0.f);
+	glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CW);
 
 	//init buffer objects
 	m_vertexBuffer = 0;
@@ -102,8 +108,15 @@ bool SFMLApp::OnInit(void)
 		if (!shader_ok) 
 		{
 			printf("Failed to compile fragment shader\n");
+			GLint maxLength = 0;
+			glGetShaderiv(m_fragmentShader1, GL_INFO_LOG_LENGTH, &maxLength);
+			std::vector<GLchar> infoLog(maxLength);
+			glGetShaderInfoLog(m_fragmentShader1, maxLength, &maxLength, &infoLog[0]);
+			printf("Log: %s\n",&infoLog[0]);
+			glDeleteShader(m_vertexShader1);
 			//show_info_log(shader, glGetShaderiv, glGetShaderInfoLog);
 			glDeleteShader(m_fragmentShader1);
+
 		}
 	}
 	//link shaders into program
@@ -134,6 +147,25 @@ bool SFMLApp::OnInit(void)
 	m_timer = 0;
 	m_timerVal = 0.0f;
 	m_timer = glGetUniformLocation(m_program1, "timer");
+
+	m_offset1 = glGetUniformLocation(m_program1, "offset");
+
+	GLint perspectiveMatrixUnif = glGetUniformLocation(m_program1, "perspectiveMatrix");
+
+	float fFrustumScale = 1.0f; float fzNear = 0.5f; float fzFar = 10.0f;
+
+	
+	memset(m_perspectiveMatrix, 0, sizeof(float) * 16);
+
+	m_perspectiveMatrix[0] = fFrustumScale / (800.0f/600.0f);
+	m_perspectiveMatrix[5] = fFrustumScale;
+	m_perspectiveMatrix[10] = (fzFar + fzNear) / (fzNear - fzFar);
+	m_perspectiveMatrix[14] = (2 * fzFar * fzNear) / (fzNear - fzFar);
+	m_perspectiveMatrix[11] = -1.0f;
+
+	glUseProgram(m_program1);
+	glUniformMatrix4fv(perspectiveMatrixUnif, 1, GL_FALSE, m_perspectiveMatrix);
+	glUseProgram(0);
 
 	std::unique_ptr<GameState_MainMenu> mainMenuGameState(new GameState_MainMenu(m_mainWindow));
 	registerState(std::move(mainMenuGameState), "MainMenu");

@@ -52,11 +52,15 @@ private:
 
 	static GLfloat cubeVertexArray[360];
 	static GLushort cubeElementArray[36];
+	static GLfloat squareVertexArray[84];
+	static GLushort squareElementArray[12];
 	GLuint m_vertexBuffer;
 	GLuint m_elementBuffer;
 	GLuint m_vertexShader1, m_fragmentShader1, m_program1;
-	GLint m_position1, m_color1;
+	GLint m_position1, m_color1, m_offset1;
 	GLfloat m_timerVal;
 	GLint m_timer;
+
+	GLfloat m_perspectiveMatrix[16];
 };
 
